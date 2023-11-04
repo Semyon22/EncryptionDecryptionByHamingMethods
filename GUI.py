@@ -1,8 +1,10 @@
 from tkinter import *
 from tkinter import ttk
 
+import caesar_cipher
 from main import *
 from haming_module import get_coded_message , get_encoded_message
+from caesar_cipher import get_coded_message ,get_encoded_message
 from tkinter.messagebox import showerror, showwarning, showinfo
 
 
@@ -23,9 +25,9 @@ def code_word():
                  + "Избыточность:\n" + str(get_redundancy(entry1.get())) + "\n" + "Неравенство крафта выполнено?\n" \
                  + str(check_crafting_inequality(
             entry1.get())) + "\n" + "Зашифрованная последовательность содержится в файле result.txt"
-
-        showinfo(title="Параметры полученные при кодировке", message=result)
         word_coding(read_word_from_file(entry.get()), dict_word_code)
+        showinfo(title="Параметры полученные при кодировке", message=result)
+
     except:
         showerror(title="Сообщение об ошибке",
                   message="Вы записали: \n 1) Либо НЕСУЩЕСТВУЮЩИЙ ФАЙЛ \n 2) Либо НИЧЕГО не ввели \n 3) Либо НЕКОРРЕКТНЫЙ файл"
@@ -90,6 +92,40 @@ def haming_encode_word():
                   )
     finally:
         pass
+def caesar_code_word():
+    #entry1 cдвиг
+    #entry слово
+    try:
+        coded_message = caesar_cipher.get_coded_message(entry.get(),entry1.get())
+
+        result = f"Ваша закодированная последовательность{coded_message}\n" \
+                 f"Закодированная последовательность записана в файл caesar_result \n"
+
+        showinfo(title="Результат Шифрования Caesar", message=result)
+
+    except:
+        showerror(title="Сообщение об ошибке",
+                  message="Вы записали: \n 1) Либо НЕСУЩЕСТВУЮЩИЙ ФАЙЛ \n 2) Либо НИЧЕГО не ввели \n 3) Либо НЕКОРРЕКТНЫЙ файл \n 4) Либо ввели НЕККОРЕКТНЫЕ данные"
+                  )
+    finally:
+        pass
+    return NONE
+def caesar_encode_word():
+    #entry2 файл сдвига
+    #entry3 файл с словом
+    try:
+        encoded_message = caesar_cipher.get_encoded_message(entry3.get(),entry2.get())
+
+        result = f"Ваша раскодированная последовательность: {encoded_message}\n" \
+                 f"Раскодированная последовательность записана в файл caesar_encoding \n" \
+
+        showinfo(title="Результат декодировки Caesar", message=result)
+    except:
+        showerror(title="Сообщение об ошибке",
+                  message="Вы записали: \n 1) Либо НЕСУЩЕСТВУЮЩИЙ ФАЙЛ \n 2) Либо НИЧЕГО не ввели \n 2) Либо НЕКОРРЕКТНЫЙ файл"
+                  )
+    finally:
+        pass
 def check_radiobatton_code():
     """
        Функция отвечающая за то какой метод кодировки использовать
@@ -100,8 +136,12 @@ def check_radiobatton_code():
         if (entry1.get()!="" and entry.get()!=''):
                 code_word()
     else:
-            if entry.get()!='':
+            if (entry.get()!='' and r_var.get==1):
                 haming_code_word()
+            else:
+                if (r_var.get() == 2 and entry1.get()!='' and entry.get()!=''):
+                    caesar_code_word()
+
 def check_radiobatton_encode():
     """
     Функция отвечающая за то какой метод декодировки использовать
@@ -111,8 +151,11 @@ def check_radiobatton_encode():
         if (entry2.get() != "" and entry3.get() != ''):
             encod_word()
     else:
-        if (entry3.get()!=''):
+        if (entry3.get()!='' and r_var.get()==1):
             haming_encode_word()
+        else:
+            if (r_var.get()==2 and entry2!='' and entry3!=''):
+                caesar_encode_word()
 def check_widget_acitivity():
     """
     функция отвечающая за активность форм ввода данных
@@ -121,27 +164,37 @@ def check_widget_acitivity():
     if r_var.get() == 0:
         entry2.state(['!disabled'])
         entry1.state(['!disabled'])
-
+        lbl1.config(text='введите имя файла с исходным ансамблем:')
+        lbl2.config(text='введите имя файла с исходным ансамблем:')
     else:
-
-        entry1.state(['disabled'])
-        entry2.state(['disabled'])
+        if r_var.get()==1:
+            entry1.state(['disabled'])
+            entry2.state(['disabled'])
+            lbl1.config(text='')
+            lbl2.config(text='')
+        else:
+            if r_var.get()==2:
+                entry2.state(['!disabled'])
+                entry1.state(['!disabled'])
+                lbl1.config(text='Введите имя файла в котором содержится сдвиг')
+                lbl2.config(text='Введите имя файла в котором содержится сдвиг')
 root = Tk()
 #радиобаттоны
 r_var = IntVar()
 r_var.set(0)
 r1=Radiobutton(text='метод Гильберта-мура',variable=r_var,value=0,command=check_widget_acitivity)
 r2=Radiobutton(text='метод Хэминга',variable=r_var,value=1,command=check_widget_acitivity)
+r3=Radiobutton(text='Шифр Цезаря',variable=r_var,value=2,command=check_widget_acitivity)
 r1.grid(column=0,row=0,sticky='s')
-
-r2.grid(column=0,row=1,sticky='s')
+r2.grid(column=0,row=0,sticky='e')
+r3.grid(column=0,row=0,sticky='w')
 #лейблы заголовков
 lbl = Label(root, text="Зашифровка последовательности", font=("Arial Bold", 15))
 lbl.grid(column=0, row=2)
-lbl = Label(root, text="введите имя файла с исходным ансамблем:", font=("Arial", 10))
-lbl.grid(column=0, row=3)
+lbl1 = Label(root, text="введите имя файла с исходным ансамблем:", font=("Arial", 10))
+lbl1.grid(column=0, row=3)
 # задание размера окна
-root.geometry('450x470')
+root.geometry('410x470')
 # добавление формы ввода до исходного ансамбля
 
 root.title("Шифрование/Дешифрование методом Гильберта-Мура c использованием помехоустоичевого кодирования")
@@ -162,8 +215,8 @@ btn.grid(column=0, row=7)
 lbl = Label(root, text="Расшифровка последовательности", font=("Arial Bold", 15))
 lbl.grid(column=0, row=8)
 
-lbl = Label(root, text="введите имя файла с исходным ансамблем:", font=("Arial", 10))
-lbl.grid(column=0, row=9)
+lbl2 = Label(root, text="введите имя файла с исходным ансамблем:", font=("Arial", 10))
+lbl2.grid(column=0, row=9)
 
 entry2 = ttk.Entry()
 entry2.grid(column=0, row=10)
