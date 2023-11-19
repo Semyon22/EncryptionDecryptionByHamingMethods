@@ -20,9 +20,7 @@ def read_param_from_file(file_path):
     finally:
         f.close()
 
-    # for i in range(0, len(word)):
-    #     if word[i] != ' ':
-    #         result.append(int(word[i]))
+
     return result
 
 
@@ -82,20 +80,21 @@ def get_elem(a, x, c, n):
             return c
 
 
-def get_sequence(a, x, c, n):
+def get_sequence(a, x, c, n,N):
     """
 
     :param a: множитель отличный от нуля
     :param x: начальное или предыдущее значение выборки
     :param c: приращение
     :param n: модуль равный мощности алфавита
+    :param N: Количество элементов выборки
     :return:
     """
     result = []
     result.append(get_elem(a, x, c, n))
-    while len(result) != 100:
+    while len(result) != N:
         result.append(get_elem(a, result[len(result) - 1], c, n))
-    # print(result)
+
     return result
 
 
@@ -156,17 +155,10 @@ def get_estimation(result, n):
         return (True,s)
 def start_generate(file_path):
     param = read_param_from_file('param')
-    result = get_sequence(param[0], param[1], param[2], param[3])
+    result = get_sequence(param[0], param[1], param[2], param[3],param[4])
     period = get_period(result)
     s,check=get_estimation(result,param[3])
-    message=f"Параметры генератора:\na = {param[0]} ; x = {param[1]} ; c = {param[2]}  ; n = {param[3]} \n"+f"Последовательность:\n{result}\n"+f"Период последовательности:\n{period}\n"+f"Результат проверки по критерию хи квадрат Пирсона:\n{s}\n"+f"Статистика критерия равна:\n{check}\n"
+    message=f"Количество элементов в последовательности: {param[4]}\n"+f"Параметры генератора:\na = {param[0]} ; x = {param[1]} ; c = {param[2]}  ; n = {param[3]} \n"+f"Последовательность:\n{result}\n"+f"Период последовательности:\n{period}\n"+f"Результат проверки по критерию хи квадрат Пирсона:\n{s}\n"+f"Статистика критерия равна:\n{check}\n"
     write_to_file('result',message)
     return (result,message)
 
-
-# print(modinv(22,33))
-# result = get_sequence(a=5, x=7, c=6, n=11)
-# print(get_period(result))
-# print(get_estimation(result, 11))
-# start_generate('param')
-# print(read_param_from_file('param'))
