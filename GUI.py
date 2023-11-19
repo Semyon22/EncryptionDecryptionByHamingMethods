@@ -2,10 +2,12 @@ from tkinter import *
 from tkinter import ttk
 
 import caesar_cipher
+import haming_module
 from main import *
 from haming_module import get_coded_message , get_encoded_message
 from caesar_cipher import get_coded_message ,get_encoded_message
 from tkinter.messagebox import showerror, showwarning, showinfo
+from LAB5_TZ import generator
 
 
 def code_word():
@@ -34,8 +36,6 @@ def code_word():
                   )
     finally:
         pass
-
-
 def encod_word():
     """
     Декодировка метода Гильберта Мура с использованием проверки на ошибку
@@ -59,7 +59,7 @@ def haming_code_word():
     :return:
     """
     try:
-        coded_message = get_coded_message(entry.get())
+        coded_message = haming_module.get_coded_message(entry.get())
 
         result = f"Ваша закодированная последовательность{coded_message}\n" \
                  f"Закодированная последовательность записана в файл haming_coded_word \n" \
@@ -80,7 +80,7 @@ def haming_encode_word():
     :return:
     """
     try:
-        encoded_message = get_encoded_message(entry3.get())
+        encoded_message = haming_module.get_encoded_message(entry3.get())
 
         result = f"Ваша раскодированная последовательность{encoded_message}\n" \
                  f"Раскодированная последовательность записана в файл haming_encoded_message \n"\
@@ -98,7 +98,7 @@ def caesar_code_word():
     try:
         coded_message = caesar_cipher.get_coded_message(entry.get(),entry1.get())
 
-        result = f"Ваша закодированная последовательность{coded_message}\n" \
+        result = f"Ваша закодированная последовательность \n {coded_message}\n" \
                  f"Закодированная последовательность записана в файл caesar_result \n"
 
         showinfo(title="Результат Шифрования Caesar", message=result)
@@ -116,7 +116,7 @@ def caesar_encode_word():
     try:
         encoded_message = caesar_cipher.get_encoded_message(entry3.get(),entry2.get())
 
-        result = f"Ваша раскодированная последовательность: {encoded_message}\n" \
+        result = f"Ваша раскодированная последовательность:\n {encoded_message}\n" \
                  f"Раскодированная последовательность записана в файл caesar_encoding \n" \
 
         showinfo(title="Результат декодировки Caesar", message=result)
@@ -126,9 +126,21 @@ def caesar_encode_word():
                   )
     finally:
         pass
+def generator_Eichenaue():
+    print(entry.get())
+    try:
+        result , message=generator.start_generate(entry.get())
+        message+="\nИнформация продублирована в файле result\n"
+        showinfo(title="Результат Генерации", message=message)
+    except:
+        showerror(title="Сообщение об ошибке",
+                  message="Вы записали: \n 1) Либо НЕСУЩЕСТВУЮЩИЙ ФАЙЛ \n 2) Либо НИЧЕГО не ввели \n 2) Либо НЕКОРРЕКТНЫЙ файл"
+                  )
+    finally:
+        pass
 def check_radiobatton_code():
     """
-       Функция отвечающая за то какой метод кодировки использовать
+       Функция отвечающая за то какой метод кодировки/генераций использовать
        :return:
        """
     if r_var.get() == 0:
@@ -136,11 +148,15 @@ def check_radiobatton_code():
         if (entry1.get()!="" and entry.get()!=''):
                 code_word()
     else:
-            if (entry.get()!='' and r_var.get==1):
+
+            if (entry.get()!='' and r_var.get()==1):
                 haming_code_word()
             else:
                 if (r_var.get() == 2 and entry1.get()!='' and entry.get()!=''):
                     caesar_code_word()
+                else:
+                    if (r_var.get() == 3 and entry.get()!=''):
+                        generator_Eichenaue()
 
 def check_radiobatton_encode():
     """
@@ -164,20 +180,56 @@ def check_widget_acitivity():
     if r_var.get() == 0:
         entry2.state(['!disabled'])
         entry1.state(['!disabled'])
+        entry3.state(['!disabled'])
+        btn1.state(['!disabled'])
         lbl1.config(text='введите имя файла с исходным ансамблем:')
         lbl2.config(text='введите имя файла с исходным ансамблем:')
+        lbl0.config(text='Зашифровка Последовательности')
+        lbl9.config(text='Введите имя файла с кодируемым словом')
+        lbl11.config(text='Расшифровка Последовательности')
+        lbl.config(text="введите имя файла с закодированным словом:")
+        btn.config(text='Зашифровать')
     else:
         if r_var.get()==1:
             entry1.state(['disabled'])
             entry2.state(['disabled'])
+            entry3.state(['!disabled'])
+            btn1.state(['!disabled'])
+            lbl.config(text="введите имя файла с закодированным словом:")
             lbl1.config(text='')
             lbl2.config(text='')
+            lbl0.config(text='Зашифровка Последовательности')
+            lbl9.config(text='Введите имя файла с кодируемым словом')
+            lbl11.config(text='Расшифровка Последовательности')
+            btn.config(text='Зашифровать')
         else:
             if r_var.get()==2:
                 entry2.state(['!disabled'])
                 entry1.state(['!disabled'])
+                entry3.state(['!disabled'])
+                btn1.state(['!disabled'])
                 lbl1.config(text='Введите имя файла в котором содержится сдвиг')
                 lbl2.config(text='Введите имя файла в котором содержится сдвиг')
+                lbl0.config(text='Зашифровка Последовательности')
+                lbl9.config(text='Введите имя файла с кодируемым словом')
+                lbl11.config(text='Расшифровка Последовательности')
+                lbl.config(text="введите имя файла с закодированным словом:")
+                btn.config(text='Зашифровать')
+            else:
+                if r_var.get()==3:
+                    lbl.config(text="")
+                    lbl2.config(text='')
+                    lbl0.config(text='Генератор псевдослучайной последовательности')
+                    lbl1.config(text='')
+                    lbl11.config(text='')
+                    lbl9.config(text='Введите имя файла в котором содержатся параметры генератора')
+                    btn.config(text='Сгенерировать последовательность')
+                    entry1.state(['disabled'])
+                    entry2.state(['disabled'])
+
+                    entry3.state(['disabled'])
+                    btn1.state(['disabled'])
+
 root = Tk()
 #радиобаттоны
 r_var = IntVar()
@@ -185,16 +237,18 @@ r_var.set(0)
 r1=Radiobutton(text='метод Гильберта-мура',variable=r_var,value=0,command=check_widget_acitivity)
 r2=Radiobutton(text='метод Хэминга',variable=r_var,value=1,command=check_widget_acitivity)
 r3=Radiobutton(text='Шифр Цезаря',variable=r_var,value=2,command=check_widget_acitivity)
+r4=Radiobutton(text='Генератор Эйхенауэра',variable=r_var,value=3,command=check_widget_acitivity)
 r1.grid(column=0,row=0,sticky='s')
 r2.grid(column=0,row=0,sticky='e')
 r3.grid(column=0,row=0,sticky='w')
+r4.grid(column=0,row=1,sticky='w')
 #лейблы заголовков
-lbl = Label(root, text="Зашифровка последовательности", font=("Arial Bold", 15))
-lbl.grid(column=0, row=2)
+lbl0 = Label(root, text="Зашифровка последовательности", font=("Arial Bold", 15))
+lbl0.grid(column=0, row=2)
 lbl1 = Label(root, text="введите имя файла с исходным ансамблем:", font=("Arial", 10))
 lbl1.grid(column=0, row=3)
 # задание размера окна
-root.geometry('410x470')
+root.geometry('470x510')
 # добавление формы ввода до исходного ансамбля
 
 root.title("Шифрование/Дешифрование методом Гильберта-Мура c использованием помехоустоичевого кодирования")
@@ -202,8 +256,8 @@ root.title("Шифрование/Дешифрование методом Гил�
 entry1 = ttk.Entry()
 entry1.grid(column=0, row=4,)
 
-lbl = Label(root, text="введите имя файла с кодируемым словом:", font=("Arial", 10))
-lbl.grid(column=0, row=5)
+lbl9 = Label(root, text="введите имя файла с кодируемым словом:", font=("Arial", 10))
+lbl9.grid(column=0, row=5)
 
 entry = ttk.Entry()
 entry.grid(column=0, row=6)
@@ -212,8 +266,8 @@ btn.grid(column=0, row=7)
 
 # элементы интерфейса для дешифровки
 
-lbl = Label(root, text="Расшифровка последовательности", font=("Arial Bold", 15))
-lbl.grid(column=0, row=8)
+lbl11 = Label(root, text="Расшифровка последовательности", font=("Arial Bold", 15))
+lbl11.grid(column=0, row=8)
 
 lbl2 = Label(root, text="введите имя файла с исходным ансамблем:", font=("Arial", 10))
 lbl2.grid(column=0, row=9)
@@ -231,19 +285,19 @@ btn1 = ttk.Button(text="Расшифровать", command=check_radiobatton_enc
 btn1.grid(column=0, row=13)
 
 # окно инструкций
-lbl = Label(root,
+lbl3 = Label(root,
             text="ВНИМАНИЕ! Чтобы программа отработала корректно,\n необходимо ввести ансамбль в следующем формате:\n"
                  "P(X1) P(X2) P(X3)... P(Xn)\n"
                  "X1    X2      X3  ...  Xn"
             , font=("Arial", 12)
             )
-lbl.grid(column=0, row=14)
-lbl = Label(root,
+lbl3.grid(column=0, row=14)
+lbl4 = Label(root,
             text="ВНИМАНИЕ! Чтобы программа отработала корректно,\n необходимо ввести слово в 1 строку\n"
                  "пример: word"
 
             , font=("Arial", 11)
             )
-lbl.grid(column=0, row=15)
+lbl4.grid(column=0, row=15)
 
 root.mainloop()
